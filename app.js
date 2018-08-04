@@ -27,11 +27,25 @@ app.post('/webhook', function(req, res){
         qs: propertiesObject
     }, function(error, response, body) {
         if(!error && response.statusCode == 200) {
-            res.json({ fulfillmentText: 
-                'The weather in ' + queryCity +
-                ' is ' + body.weather[0].description +
-                '. And the temperature is around ' + body.main.temp
-            });
+            res.json(
+                { 
+                    fulfillmentText: queryCity + ' 的天氣 ' + body.weather[0].description + '，' + body.main.temp + ' 度。',
+                    fulfillmentMessages: [{
+                            "card": {
+                                title: queryCity,
+                                subtitle: body.weather[0].description,
+                                imageUri: "https://openweathermap.org/img/w/" + body.weather[0].icon + '.png',
+                                buttons: [
+                                    {
+                                        text: body.weather[0].description,
+                                        postback: "https://openweathermap.org/" 
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            );
         }else{
             console.log(response.statusCode);
             console.log(response.body.message)
